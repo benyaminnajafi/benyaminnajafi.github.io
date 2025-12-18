@@ -54,7 +54,8 @@ const gameState = {
     score: 0,
     highScore: parseInt(localStorage.getItem('snakeHighScore')) || 0,
     gameOver: false,
-    lastTick: 0
+    lastTick: 0,
+    currentSpeed: 150  // Dynamic speed (starts at TICK_INTERVAL)
 };
 
 // Canvas Setup
@@ -141,6 +142,64 @@ function playEatSound() {
     }
 }
 
+// Level up sound - plays every 10 points
+function playLevelUpSound() {
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().catch(() => {});
+        }
+        
+        // Play a cheerful ascending melody
+        const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = freq;
+            oscillator.type = 'square';
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.15);
+            oscillator.start(audioContext.currentTime + i * 0.1);
+            oscillator.stop(audioContext.currentTime + i * 0.1 + 0.15);
+        });
+    } catch (e) {
+        console.warn('Audio not available:', e);
+    }
+}
+
+// Game over sound
+function playGameOverSound() {
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().catch(() => {});
+        }
+        
+        // Play a sad descending sound
+        const notes = [400, 350, 300, 250];
+        notes.forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sawtooth';
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.15);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.15 + 0.2);
+            oscillator.start(audioContext.currentTime + i * 0.15);
+            oscillator.stop(audioContext.currentTime + i * 0.15 + 0.2);
+        });
+    } catch (e) {
+        console.warn('Audio not available:', e);
+    }
+}
+
 // Canvas Resize
 function resizeCanvas() {
     if (!canvas) return;
@@ -167,6 +226,7 @@ function tick() {
     
     if (checkSelfCollision(newHead)) {
         gameState.gameOver = true;
+        playGameOverSound();
         return;
     }
     
@@ -176,7 +236,15 @@ function tick() {
         gameState.score++;
         gameState.food = generateFood();
         updateScoreDisplay();
-        playEatSound();
+        
+        // Check if we hit a multiple of 10
+        if (gameState.score % 10 === 0 && gameState.score > 0) {
+            playLevelUpSound();
+            // Increase speed (reduce interval) - minimum 50ms
+            gameState.currentSpeed = Math.max(50, gameState.currentSpeed - 15);
+        } else {
+            playEatSound();
+        }
     } else {
         gameState.snake.pop();
     }
@@ -251,6 +319,7 @@ function resetGame() {
     gameState.score = 0;
     gameState.gameOver = false;
     gameState.lastTick = performance.now();
+    gameState.currentSpeed = CONFIG.TICK_INTERVAL;  // Reset speed
     
     updateScoreDisplay();
 }
@@ -258,7 +327,8 @@ function resetGame() {
 function gameLoop(timestamp) {
     const elapsed = timestamp - gameState.lastTick;
     
-    if (elapsed >= CONFIG.TICK_INTERVAL && !gameState.gameOver) {
+    // Use dynamic speed instead of fixed TICK_INTERVAL
+    if (elapsed >= gameState.currentSpeed && !gameState.gameOver) {
         tick();
         gameState.lastTick = timestamp;
     }
