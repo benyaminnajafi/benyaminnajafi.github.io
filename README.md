@@ -2,7 +2,11 @@
 
 A classic Snake game built with vanilla HTML5, CSS3, and JavaScript. Single-file, zero dependencies, and ready to play!
 
-![Game Screenshot](Screenshot.png)
+<p align="center">
+  <img src="img/Screenshot (Play).png" alt="Gameplay" width="45%">
+  &nbsp;&nbsp;&nbsp;
+  <img src="img/Screenshot (Game Over).png" alt="Game Over" width="45%">
+</p>
 
 ## About
 
@@ -46,6 +50,8 @@ Play the game online: **[https://ghaochghaoch.ir](https://ghaochghaoch.ir)**
 │   └── style.css      # All game styles
 ├── js/
 │   └── game.js        # Game logic and engine
+├── img/
+│   └── Screenshot.png  # Game screenshots
 └── README.md          # This file
 ```
 
