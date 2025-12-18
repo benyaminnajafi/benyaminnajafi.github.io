@@ -106,6 +106,209 @@ function drawCell(x, y, color) {
     );
 }
 
+// Calculate distance to food (Manhattan distance)
+function getDistanceToFood() {
+    const head = gameState.snake[0];
+    const food = gameState.food;
+    return Math.abs(head.x - food.x) + Math.abs(head.y - food.y);
+}
+
+// Draw snake head with mouth (opens when near food)
+function drawSnakeHead(x, y) {
+    if (!ctx) return;
+    
+    const px = x * CONFIG.CELL_SIZE;
+    const py = y * CONFIG.CELL_SIZE;
+    const size = CONFIG.CELL_SIZE;
+    const center = size / 2;
+    const dir = gameState.direction;
+    
+    // Check if mouth should be open (within 3 cells of food)
+    const distanceToFood = getDistanceToFood();
+    const mouthOpen = distanceToFood <= 3;
+    
+    if (mouthOpen) {
+        // Calculate mouth direction offset
+        let mouthX = 0, mouthY = 0;
+        if (dir === 'right') { mouthX = 1; }
+        else if (dir === 'left') { mouthX = -1; }
+        else if (dir === 'up') { mouthY = -1; }
+        else { mouthY = 1; }
+        
+        // Draw head base (circle)
+        ctx.fillStyle = COLORS.snakeHead;
+        ctx.beginPath();
+        ctx.arc(px + center, py + center, center, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw mouth interior (dark red/maroon)
+        ctx.fillStyle = '#8B0000';
+        ctx.beginPath();
+        
+        if (dir === 'right') {
+            ctx.moveTo(px + center, py + center);
+            ctx.lineTo(px + size + size * 0.3, py + center - size * 0.4);
+            ctx.lineTo(px + size + size * 0.3, py + center + size * 0.4);
+            ctx.closePath();
+        } else if (dir === 'left') {
+            ctx.moveTo(px + center, py + center);
+            ctx.lineTo(px - size * 0.3, py + center - size * 0.4);
+            ctx.lineTo(px - size * 0.3, py + center + size * 0.4);
+            ctx.closePath();
+        } else if (dir === 'up') {
+            ctx.moveTo(px + center, py + center);
+            ctx.lineTo(px + center - size * 0.4, py - size * 0.3);
+            ctx.lineTo(px + center + size * 0.4, py - size * 0.3);
+            ctx.closePath();
+        } else { // down
+            ctx.moveTo(px + center, py + center);
+            ctx.lineTo(px + center - size * 0.4, py + size + size * 0.3);
+            ctx.lineTo(px + center + size * 0.4, py + size + size * 0.3);
+            ctx.closePath();
+        }
+        ctx.fill();
+        
+        // Draw tongue (red)
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        
+        if (dir === 'right') {
+            ctx.ellipse(px + size + size * 0.15, py + center, size * 0.2, size * 0.1, 0, 0, Math.PI * 2);
+        } else if (dir === 'left') {
+            ctx.ellipse(px - size * 0.15, py + center, size * 0.2, size * 0.1, 0, 0, Math.PI * 2);
+        } else if (dir === 'up') {
+            ctx.ellipse(px + center, py - size * 0.15, size * 0.1, size * 0.2, 0, 0, Math.PI * 2);
+        } else { // down
+            ctx.ellipse(px + center, py + size + size * 0.15, size * 0.1, size * 0.2, 0, 0, Math.PI * 2);
+        }
+        ctx.fill();
+        
+        // Draw teeth (white triangles)
+        ctx.fillStyle = '#FFFFFF';
+        const t = size * 0.12; // tooth size
+        
+        if (dir === 'right') {
+            // Top jaw teeth
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center + i * t * 1.5, py + center - size * 0.35);
+                ctx.lineTo(px + center + t * 0.7 + i * t * 1.5, py + center - size * 0.15);
+                ctx.lineTo(px + center + t * 1.4 + i * t * 1.5, py + center - size * 0.35);
+                ctx.fill();
+            }
+            // Bottom jaw teeth
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center + i * t * 1.5, py + center + size * 0.35);
+                ctx.lineTo(px + center + t * 0.7 + i * t * 1.5, py + center + size * 0.15);
+                ctx.lineTo(px + center + t * 1.4 + i * t * 1.5, py + center + size * 0.35);
+                ctx.fill();
+            }
+        } else if (dir === 'left') {
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center - i * t * 1.5, py + center - size * 0.35);
+                ctx.lineTo(px + center - t * 0.7 - i * t * 1.5, py + center - size * 0.15);
+                ctx.lineTo(px + center - t * 1.4 - i * t * 1.5, py + center - size * 0.35);
+                ctx.fill();
+            }
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center - i * t * 1.5, py + center + size * 0.35);
+                ctx.lineTo(px + center - t * 0.7 - i * t * 1.5, py + center + size * 0.15);
+                ctx.lineTo(px + center - t * 1.4 - i * t * 1.5, py + center + size * 0.35);
+                ctx.fill();
+            }
+        } else if (dir === 'up') {
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center - size * 0.35, py + center - i * t * 1.5);
+                ctx.lineTo(px + center - size * 0.15, py + center - t * 0.7 - i * t * 1.5);
+                ctx.lineTo(px + center - size * 0.35, py + center - t * 1.4 - i * t * 1.5);
+                ctx.fill();
+            }
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center + size * 0.35, py + center - i * t * 1.5);
+                ctx.lineTo(px + center + size * 0.15, py + center - t * 0.7 - i * t * 1.5);
+                ctx.lineTo(px + center + size * 0.35, py + center - t * 1.4 - i * t * 1.5);
+                ctx.fill();
+            }
+        } else { // down
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center - size * 0.35, py + center + i * t * 1.5);
+                ctx.lineTo(px + center - size * 0.15, py + center + t * 0.7 + i * t * 1.5);
+                ctx.lineTo(px + center - size * 0.35, py + center + t * 1.4 + i * t * 1.5);
+                ctx.fill();
+            }
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(px + center + size * 0.35, py + center + i * t * 1.5);
+                ctx.lineTo(px + center + size * 0.15, py + center + t * 0.7 + i * t * 1.5);
+                ctx.lineTo(px + center + size * 0.35, py + center + t * 1.4 + i * t * 1.5);
+                ctx.fill();
+            }
+        }
+        
+        // Draw eyes
+        ctx.fillStyle = '#FFFFFF';
+        if (dir === 'right' || dir === 'left') {
+            ctx.beginPath();
+            ctx.arc(px + center, py + center - size * 0.25, size * 0.15, 0, Math.PI * 2);
+            ctx.arc(px + center, py + center + size * 0.25, size * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            // Pupils
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(px + center + (dir === 'right' ? size * 0.05 : -size * 0.05), py + center - size * 0.25, size * 0.07, 0, Math.PI * 2);
+            ctx.arc(px + center + (dir === 'right' ? size * 0.05 : -size * 0.05), py + center + size * 0.25, size * 0.07, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.beginPath();
+            ctx.arc(px + center - size * 0.25, py + center, size * 0.15, 0, Math.PI * 2);
+            ctx.arc(px + center + size * 0.25, py + center, size * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            // Pupils
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(px + center - size * 0.25, py + center + (dir === 'down' ? size * 0.05 : -size * 0.05), size * 0.07, 0, Math.PI * 2);
+            ctx.arc(px + center + size * 0.25, py + center + (dir === 'down' ? size * 0.05 : -size * 0.05), size * 0.07, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    } else {
+        // Draw normal closed head (circle with eyes)
+        ctx.fillStyle = COLORS.snakeHead;
+        ctx.beginPath();
+        ctx.arc(px + center, py + center, center, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw eyes for closed mouth
+        ctx.fillStyle = '#FFFFFF';
+        if (dir === 'right' || dir === 'left') {
+            ctx.beginPath();
+            ctx.arc(px + center + (dir === 'right' ? size * 0.15 : -size * 0.15), py + center - size * 0.2, size * 0.12, 0, Math.PI * 2);
+            ctx.arc(px + center + (dir === 'right' ? size * 0.15 : -size * 0.15), py + center + size * 0.2, size * 0.12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(px + center + (dir === 'right' ? size * 0.2 : -size * 0.2), py + center - size * 0.2, size * 0.06, 0, Math.PI * 2);
+            ctx.arc(px + center + (dir === 'right' ? size * 0.2 : -size * 0.2), py + center + size * 0.2, size * 0.06, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.beginPath();
+            ctx.arc(px + center - size * 0.2, py + center + (dir === 'down' ? size * 0.15 : -size * 0.15), size * 0.12, 0, Math.PI * 2);
+            ctx.arc(px + center + size * 0.2, py + center + (dir === 'down' ? size * 0.15 : -size * 0.15), size * 0.12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(px + center - size * 0.2, py + center + (dir === 'down' ? size * 0.2 : -size * 0.2), size * 0.06, 0, Math.PI * 2);
+            ctx.arc(px + center + size * 0.2, py + center + (dir === 'down' ? size * 0.2 : -size * 0.2), size * 0.06, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+}
+
 // New high score sound
 const newHighScoreAudio = new Audio('sound/bababenazam.m4a');
 
@@ -288,8 +491,12 @@ function render() {
     
     // Draw snake
     gameState.snake.forEach((segment, index) => {
-        const color = index === 0 ? COLORS.snakeHead : COLORS.snake;
-        drawCell(segment.x, segment.y, color);
+        if (index === 0) {
+            // Draw head with mouth animation
+            drawSnakeHead(segment.x, segment.y);
+        } else {
+            drawCell(segment.x, segment.y, COLORS.snake);
+        }
     });
     
     // Game over is now handled by HTML overlay
