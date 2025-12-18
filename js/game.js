@@ -7,14 +7,14 @@ const CONFIG = {
     INITIAL_LENGTH: 3
 };
 
-// Color Scheme
+// Color Scheme - Retro vibrant style
 const COLORS = {
-    background: '#0f0f1e',
-    snake: '#00ff00',
-    snakeHead: '#00cc00',
-    food: '#ff0000',
-    gameOverOverlay: 'rgba(0,0,0,0.7)',
-    gameOverText: '#ffffff'
+    background: '#3D6B2E',
+    snake: '#5CBF45',
+    snakeHead: '#7EE868',
+    food: '#FFE135',
+    gameOverOverlay: 'rgba(41, 82, 227, 0.85)',
+    gameOverText: '#FFE135'
 };
 
 // Direction Vectors

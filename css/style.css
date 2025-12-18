@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Courier New', monospace;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: #2952E3;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
@@ -36,13 +36,15 @@ body {
     transform: translateX(-50%);
     z-index: 10;
     font-size: 24px;
-    color: #00ff00;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    font-weight: bold;
+    color: #FFE135;
+    text-shadow: 2px 2px 0px #000;
 }
 
 #game {
-    border: 3px solid #333;
-    background-color: #0f0f1e;
+    border: 4px solid #1a3a8a;
+    border-radius: 8px;
+    background-color: #3D6B2E;
     display: block;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
@@ -50,4 +52,5 @@ body {
     max-height: calc(100% - 80px);
     width: auto;
     height: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
