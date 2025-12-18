@@ -50,12 +50,6 @@ The entire game is contained in `index.html`:
 
 Simply open `index.html` in your browser. No server needed!
 
-Or use a local server:
-```bash
-python3 -m http.server 8000
-# Then open http://localhost:8000/index.html
-```
-
 ## Controls
 
 - **Arrow Keys** or **WASD**: Change direction
