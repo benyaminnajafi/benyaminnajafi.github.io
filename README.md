@@ -51,7 +51,7 @@ Play the game online: **[https://ghaochghaoch.ir](https://ghaochghaoch.ir)**
 ├── js/
 │   └── game.js        # Game logic and engine
 ├── img/
-│   └── Screenshot.png  # Game screenshots
+│   └── *.png           # Game screenshots
 └── README.md          # This file
 ```
 
