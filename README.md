@@ -33,6 +33,10 @@ Play the game online: **[https://ghaochghaoch.ir](https://ghaochghaoch.ir)**
 3. Eat the red food to grow and increase your score
 4. Avoid hitting yourself!
 
+**Controls:**
+- **Arrow Keys** or **WASD**: Change direction
+- **Spacebar** or **R**: Restart game after game over
+
 ## Project Structure
 
 ```
@@ -49,11 +53,6 @@ The entire game is contained in `index.html`:
 ## Running Locally
 
 Simply open `index.html` in your browser. No server needed!
-
-## Controls
-
-- **Arrow Keys** or **WASD**: Change direction
-- **Spacebar** or **R**: Restart game after game over
 
 ## Customization
 
